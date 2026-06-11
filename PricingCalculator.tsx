@@ -1,5 +1,5 @@
 // Eloboosting Pricing Calculator for Framer
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { addPropertyControls, ControlType } from "framer"
 
 type Rank = "Iron" | "Bronze" | "Silver" | "Gold" | "Platinum" | "Diamond" | "Ascendant" | "Immortal" | "Radiant"
@@ -24,6 +24,12 @@ export default function PricingCalculator() {
   const [desiredRank, setDesiredRank] = useState<Rank>("Gold")
   const [gameMode, setGameMode] = useState<GameMode>("Solo/Duo")
   const [addCoaching, setAddCoaching] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  // Fix for live site hydration
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const calculatePrice = () => {
     const currentIndex = ranks.indexOf(currentRank)
@@ -51,16 +57,19 @@ export default function PricingCalculator() {
     return Math.round(total)
   }
 
-  const price = calculatePrice()
+  const price = isClient ? calculatePrice() : 0
 
   return (
     <div style={{
       fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif",
       padding: "2rem",
-      backgroundColor: "#1a1a2e",
+      backgroundColor: "rgba(26, 26, 46, 0.9)", // Semi-transparent so your gradient shows through!
+      backdropFilter: "blur(10px)", // Optional: add glass effect!
       color: "#fff",
       borderRadius: "12px",
       maxWidth: "500px",
+      width: "100%",
+      boxSizing: "border-box",
     }}>
       <h2 style={{ margin: "0 0 1.5rem 0", color: "#e94560" }}>
         🔥 Elo Boosting Calculator
@@ -116,6 +125,7 @@ export default function PricingCalculator() {
         </label>
         <div style={{ display: "flex", gap: "1rem" }}>
           <button
+            type="button"
             onClick={() => setGameMode("Solo/Duo")}
             style={{
               flex: 1,
@@ -130,6 +140,7 @@ export default function PricingCalculator() {
             Solo/Duo
           </button>
           <button
+            type="button"
             onClick={() => setGameMode("Flex")}
             style={{
               flex: 1,
@@ -171,18 +182,21 @@ export default function PricingCalculator() {
         <div style={{ fontSize: "3rem", fontWeight: "bold", color: "#e94560" }}>
           ${price}
         </div>
-        <button style={{
-          marginTop: "1rem",
-          width: "100%",
-          padding: "1rem",
-          backgroundColor: "#e94560",
-          color: "#fff",
-          border: "none",
-          borderRadius: "8px",
-          fontSize: "1rem",
-          fontWeight: "bold",
-          cursor: "pointer",
-        }}>
+        <button
+          type="button"
+          style={{
+            marginTop: "1rem",
+            width: "100%",
+            padding: "1rem",
+            backgroundColor: "#e94560",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            fontSize: "1rem",
+            fontWeight: "bold",
+            cursor: "pointer",
+          }}
+        >
           Order Now
         </button>
       </div>
